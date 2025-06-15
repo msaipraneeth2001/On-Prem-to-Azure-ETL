@@ -1,0 +1,102 @@
+# great_expectations.yml
+config_version: 3.0
+
+# Datasources configuration
+datasources:
+  spark_silver_datasource: # Existing silver datasource
+    class_name: Datasource
+    execution_engine:
+      class_name: SparkDFExecutionEngine
+    data_connectors:
+      delta_silver_connector:
+        class_name: InferredAssetFilesystemDataConnector # Kept as per previous state
+        base_directory: /mnt/silver/SalesLT/
+        glob_directive: "*/" # Each subdirectory is a data asset (Delta table)
+        default_regex:
+          pattern: (.*)/ # Capture the directory name as the asset name
+          group_names:
+            - data_asset_name
+        assets:
+          Product: {} # Explicitly define the Product data asset, connector will infer details
+
+  spark_gold_datasource: # New gold datasource
+    class_name: Datasource
+    execution_engine:
+      class_name: SparkDFExecutionEngine
+    data_connectors:
+      delta_gold_connector:
+        class_name: InferredAssetDBFSDataConnector # As specified for gold
+        base_directory: /mnt/gold/SalesLT/
+        glob_directive: "*/" # Each subdirectory is a data asset
+        default_regex:
+          pattern: (.*)/ # Capture the directory name as the asset name
+          group_names:
+            - data_asset_name
+        assets:
+          Product: {} # Define the Product data asset for gold
+
+# Stores for Expectations, Validations, and Data Docs
+stores:
+  expectations_store:
+    class_name: ExpectationsStore
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: expectations/
+  # validations_store:
+  #   class_name: ValidationsStore
+  #   store_backend:
+  #     class_name: TupleFilesystemStoreBackend
+  #     base_directory: uncommitted/validations/
+  # evaluation_parameter_store:
+  #   class_name: EvaluationParameterStore
+
+# Directory for custom plugins
+plugins_directory: plugins/
+
+# Configuration for Data Docs
+data_docs_sites:
+  local_site:
+    class_name: SiteBuilder
+    store_backend:
+      class_name: TupleFilesystemStoreBackend
+      base_directory: uncommitted/data_docs/local_site/
+    site_index_builder:
+      class_name: DefaultSiteIndexBuilder
+
+# Path to the file storing configuration variables
+config_variables_file_path: uncommitted/config_variables.yml
+
+# Anonymous usage statistics
+# anonymous_usage_statistics:
+#   enabled: true
+#   data_context_id: null
+#   usage_statistics_url: https://stats.greatexpectations.io/great_expectations/v1/usage_statistics
+
+# Top-level store names
+expectations_store_name: expectations_store
+# validations_store_name: validations_store
+# evaluation_parameter_store_name: evaluation_parameter_store
+
+# Validation Operators
+# validation_operators:
+#   action_list_operator:
+#     class_name: ActionListValidationOperator
+#     action_list:
+#       - name: store_validation_result
+#         action:
+#           class_name: StoreValidationResultAction
+#       - name: store_evaluation_params
+#         action:
+#           class_name: StoreEvaluationParametersAction
+#       - name: update_data_docs
+#         action:
+#           class_name: UpdateDataDocsAction
+
+# Fluent Datasources
+# fluent_datasources: {}
+
+# Concurrency configuration
+# concurrency:
+#   enabled: false
+#   backend: "sqlite"
+#   connection_string: "sqlite:///path/to/your/metadata.db"

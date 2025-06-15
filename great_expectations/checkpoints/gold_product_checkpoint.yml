@@ -1,0 +1,34 @@
+name: gold_product_checkpoint
+config_version: 1.0
+class_name: SimpleCheckpoint
+run_name_template: '%Y%m%d-%H%M%S-gold-product-validation'
+
+validations:
+  - batch_request:
+      datasource_name: spark_gold_datasource # Points to the gold datasource
+      data_connector_name: delta_gold_connector # Gold connector
+      data_asset_name: Product # Gold Product data asset
+    expectation_suite_name: gold_product_suite # Gold suite
+
+action_list:
+  - name: store_validation_result
+    action:
+      class_name: StoreValidationResultAction
+  - name: store_evaluation_params
+    action:
+      class_name: StoreEvaluationParametersAction
+  - name: update_data_docs
+    action:
+      class_name: UpdateDataDocsAction
+      site_names: [] # An empty list updates all configured sites
+
+# Optional: Keep these empty if not overriding specific parameters during this run
+evaluation_parameters: {}
+runtime_configuration: {}
+
+# Optional: Profilers can be added here if desired
+profilers: []
+
+# Optional: ge_cloud_id and expectation_suite_ge_cloud_id are for GX Cloud integration
+ge_cloud_id: null
+expectation_suite_ge_cloud_id: null

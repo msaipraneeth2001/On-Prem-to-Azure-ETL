@@ -1,0 +1,10 @@
+# Ignore the uncommitted directory to prevent committing sensitive data and large files
+uncommitted/
+
+# Other common files to ignore in a Great Expectations setup (optional but recommended)
+# *.checkpoint
+# .ipynb_checkpoints/
+# profiler_*.json
+# data_docs/local_site/validations/*/*/*.html # If not using the uncommitted structure for data_docs
+# notebooks/profiling_results_*.html
+# notebooks/validation_playground_*.html
